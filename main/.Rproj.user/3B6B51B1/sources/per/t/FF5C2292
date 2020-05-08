@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588968398193.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4199914004",
+    "id" : "FF5C2292",
+    "lastKnownWriteTime" : 1588968435,
+    "last_content_update" : 1588968435855,
+    "path" : "~/Documents/Waimea/16Sglobal/main/16Sglobal.Rmd",
+    "project_path" : "16Sglobal.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "9,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
