@@ -1,0 +1,138 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+```{r}
+library(ggplot2)
+library(data.table)
+
+# read in data processed on HPC
+ASV_ranges <- readRDS("../data/processed/sample_range_correlation.rds")[[1]]
+
+empo_1 <- readRDS("../data/processed/empo_ranges/empo_1_sample_range_correlation.rds")[[1]]
+
+empo_2 <- readRDS("../data/processed/empo_ranges/empo_2_sample_range_correlation.rds")[[1]]
+
+empo_3 <- readRDS("../data/processed/empo_ranges/empo_3_sample_range_correlation.rds")[[1]]
+#saveRDS( ASV_ranges, "../data/processed/ASV_samples_vs_range_data.rds")
+
+#fwrite(ASV_ranges, "../data/processed/ASV_ranges.csv")
+
+
+```
+
+
+```{r}
+# prep_range_plot() gets all the components together for plotting range vs. sample type
+prep_range_plot <- function(range_dat){
+
+# subset data
+range_dat <-range_dat[range_coord > 0 & group_count >1]
+
+# calculate linear model
+range_mod <- lm( log(range_coord +1) ~ log(group_count), data = range_dat) 
+
+# run anova
+range_anova <- summary(range_mod)
+
+# predict confidence intervals
+conf_int <- predict( range_mod, interval = "confidence", level = 0.95 )
+
+out <- list(range_dat, conf_int, range_mod, range_anova)
+names(out) <- c("data", "conf_interval", "range_mod", "anova_sum")
+
+return(out)
+
+}
+
+
+# run on the sample types
+empo_1_prep <- prep_range_plot(empo_1)
+empo_2_prep <- prep_range_plot(empo_2)
+empo_3_prep <- prep_range_plot(empo_3)
+
+sample_type_prep <- prep_range_plot(ASV_ranges)
+```
+
+
+# Plot
+
+```{r}
+hist1 <- ggplot(sample_type_prep$data)+
+  geom_histogram(aes(x = group_count))+
+  labs(x = "Number of Sample Types", title =  "Histogram: Number of Sample Types")
+
+hist2 <- ggplot(sample_type_prep$data)+
+  geom_histogram(aes(x = range_coord))+
+  labs(x = "Range in Latitude", title ="Histogram: Number of Sample Types")
+
+
+hist3 <- ggplot(sample_type_prep$data)+
+  geom_histogram(aes(x = log(group_count +1 )))+
+  labs(x = "Number of Sample Types", title =  "Histogram: Number of Sample Types")
+
+hist4 <- ggplot(sample_type_prep$data)+
+  geom_histogram(aes(x = log(range_coord+1)))+
+  labs(x = "Range in Latitude", title ="Histogram: Number of Sample Types")
+hist4
+
+ggsave(hist1, "../outputs/figures/n_samples_hist.png")
+ggsave(hist2, "../outputs/figures/range_lat_hist.png")
+ggsave(hist3, "../outputs/figures/log_n_samples_hist.png")
+ggsave(hist4, "../outputs/figures/log_range_lat_hist.png")
+
+
+```
+
+
+
+```{r}
+
+plot_range_cor <- function(plot_prep, description = NULL){
+p <- ggplot( plot_prep$data,  aes( x = group_count, log(range_coord +1)) ) +
+      # points
+      #geom_jitter(width = 0.2, height = 3, alpha = 0.3)+
+      
+      # density
+      stat_bin_2d(aes(fill = log(..count..)))+
+      scale_fill_viridis_c() +
+  
+      # scales and labels
+      theme(panel.grid.minor = element_blank())+
+      scale_x_continuous(breaks = seq_len( max(plot_prep$data$group_count) ),
+                         expand = expansion( c( 0, .01) ) ) +
+      labs(title = "Global Range vs. Distribution Across Sample Types ",
+           caption = paste( "P =", signif(plot_prep$anova_sum$coefficients[8], 3),
+                            "   ",
+                            "R^2 = ", signif(plot_prep$anova_sum$r.squared, 3) ) ) +
+      labs(color = "Latitude Range",
+           x = "Number of Sample Types",
+           y = "Global Range in Latitude") +
+      theme_classic()+
+      #theme( panel.background = element_rect(fill = "white",
+       #                         colour = "darkgray",
+        #                        size = 0.5, linetype = "solid"))+
+      
+      
+      # trend line and confidence interval
+      # geom_abline( slope = coefficients( plot_prep$range_mod )[2],
+      #             intercept = coefficients( plot_prep$range_mod )[1] ) +
+      geom_ribbon( aes( ymin = plot_prep$conf_interval[,2], ymax = plot_prep$conf_interval[,3] ),
+                  color = "blue", fill = "blue", alpha = 0.2 )
+      
+p
+# save plot
+ggsave(filename = paste0("../outputs/figures/",description,"_range_correlation.png"), p, width = 10)
+
+}
+
+plot_range_cor(sample_type_prep, "sample_type")
+plot_range_cor(empo_2_prep, "empo_2")
+plot_range_cor(empo_3_prep, "empo_3")
+
+
+```
+

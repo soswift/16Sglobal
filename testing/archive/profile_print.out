@@ -1,0 +1,72 @@
+
+
+### EMP Dataset
+
+Qiita 16S Pipeline outputs: EMP + Waimea raw OTU table (read in as data.table)
+size =  65.29 GB
+dimensions =  "303397" "28182" 
+
+Sequence ids column of OTU table (i.e. full nucleotide sequence)
+size =  53.2 Mb
+length = 303397
+
+EMP + Waimea raw OTU table, after dropping sequence ids
+size =  65.24 GB
+dimensions = "303397" "28180" 
+
+Qita OTU table subset: Samples from Waimea Valley (No EMP)
+size =  3.81 GB
+dimensions = "303397" "1645"  
+
+Qiita OTU table subset: Samples from EMP dataset (No Waimea)
+size = 61.42 GB
+dimensions = [1] "303397" "26535" 
+
+Culling Qiita OTU table:
+
+	Culling OTUS from data
+	min number of samples for OTU to be present in =  3
+	min abundance of OTU to count as being present =  500
+	minimum single abundance in a sample = 10
+	Starting # OTUS = 303397
+	Post-Cull # OTUS = 6632
+
+Qiita OTU table culled
+size =  1.43 GB
+dimensions =  "6632"  "28180"
+
+### HPC Dataset
+
+HPC 16S OTU table
+size = 2.4 GB
+dimensions = "1732", "355694"
+
+
+Transposed 16S OTU table (samples as columns,like Qiita table)
+size = 4.6 GB
+dimensions = "355694", "1732"
+
+Culling HPC OTU table (same criteria):
+
+	Culling OTUS from data
+	min number of samples for OTU to be present in =  3
+	min abundance of OTU to count as being present =  500
+	minimum single abundance in a sample = 10
+	Starting # OTUS = 3556893
+	Post-Cull # OTUS = 238878
+
+HPC OTU table culled
+size = 1.6 GB
+dimensions = "1732" , "238879"
+
+
+
+
+
+
+
+
+
+
+
+
