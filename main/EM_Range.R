@@ -30,9 +30,7 @@ make_pa <- function(Col) {
 ## gev_value(): conditionally replaces numeric value in list with numeric value from another list
 
 get_value <- function(Val1, Val2){
-  
   New_Val <- Val2[Val1 !=0]
-  
   return(New_Val)
 }
 
@@ -44,7 +42,6 @@ sub_by_samples <- function(samples, otu_table, OTU_name_column = NA){
   
   if(is.na(OTU_name_column)){
     # No OTU name column present
-    
     # subset columns by selected sample names
     new_otu  <- otu_table[ , ..samples]
     
@@ -168,7 +165,9 @@ all_meta <- set_standardID(all_meta, "SampleID")
 # Subset waimea samples
 wai_meta <- all_meta[site_type == "Core Waimea"]
 
-wai_otu <- sub_by_samples(samples = wai_meta$standardID,  otu_table = all_otus, OTU_name_column = "OTU_ID")
+wai_otu <- sub_by_samples(samples = wai_meta$standardID,
+                          otu_table = all_otus,
+                          OTU_name_column = "OTU_ID")
 
 # Correlate ----------
 
